@@ -1,0 +1,24 @@
+init:
+- appveyor version
+- sh: echo $APPVEYOR_BUILD_WORKER_CLOUD
+- sh: echo $APPVEYOR_BUILD_WORKER_IMAGE
+
+stack:
+  - jdk 7
+  - jdk 8
+  - jdk 9
+  - jdk 10
+  - jdk 11
+
+test_script:
+- sh: javac TLSProtocolTest.java
+- sh: java TLSProtocolTest
+- sh: |
+    if [[ $(java TLSProtocolTest) =~ TLSv1.2 ]]; then
+        echo "JDK $APPVEYOR_STACK_JDK supports TLS 1.2"
+    else
+        echo "[ERROR] JDK $APPVEYOR_STACK_JDK does not supports TLS 1.2!"
+        return 1
+    fi
+
+build: off
